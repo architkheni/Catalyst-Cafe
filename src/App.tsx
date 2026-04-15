@@ -10,11 +10,14 @@ import {
   Menu as MenuIcon, 
   X, 
   ChevronRight, 
+  ChevronLeft,
   Star, 
   Zap, 
   BookOpen, 
   Users,
-  Leaf
+  Leaf,
+  Info,
+  Flame
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -29,44 +32,87 @@ const IMAGES = {
   signage: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1000&q=80",
 };
 
-const MENU_HIGHLIGHTS = [
+interface MenuItem {
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+  longDescription: string;
+  tag?: string;
+  image: string;
+  ingredients: string[];
+  calories: string;
+  allergens?: string[];
+}
+
+const MENU_HIGHLIGHTS: MenuItem[] = [
   {
+    id: "cold-brew",
     name: "Cold Brew",
     price: "$5.50",
     description: "Our fan favorite. Smooth, bold, and brewed for 18 hours. Some say it's the best in Perth.",
+    longDescription: "Experience the ultimate caffeine kick with our signature Cold Brew. We steep our premium, ethically sourced Arabica beans in cold filtered water for a full 18 hours. This slow extraction process results in a remarkably smooth, naturally sweet coffee with zero bitterness and a powerful caffeine punch. Perfect for hot Perth days or when you need serious focus.",
     tag: "Fan Favorite",
-    image: IMAGES.coffee
+    image: IMAGES.coffee,
+    ingredients: ["100% Arabica Coffee Beans (Single Origin)", "Triple Filtered Water", "Ice"],
+    calories: "15 kcal",
+    allergens: ["None"]
   },
   {
+    id: "thai-green-chicken",
     name: "Thai Green Chicken",
     price: "$12.50",
     description: "Aromatic, creamy, and just the right amount of spice. The perfect brain fuel for long study sessions.",
+    longDescription: "A comforting, hearty bowl of authentic Thai Green Curry. Made from scratch using fresh green chilies, lemongrass, and galangal, simmered in rich coconut milk with tender chicken breast slices and crisp vegetables. Served over steaming fragrant jasmine rice. It's the ultimate comfort food to power you through your next study session.",
     tag: "Bestseller",
-    image: "https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&w=800&q=80"
+    image: "https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Free-range Chicken Breast", "Green Curry Paste (Lemongrass, Galangal, Green Chilies)", "Coconut Milk", "Bamboo Shoots", "Green Beans", "Jasmine Rice", "Fresh Thai Basil"],
+    calories: "550 kcal",
+    allergens: ["Soy", "Fish Sauce"]
   },
   {
+    id: "matcha-latte",
     name: "Matcha Latte",
     price: "$6.00",
     description: "Ceremonial grade matcha whisked to perfection. Earthy, vibrant, and zen-inducing.",
-    image: "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=800&q=80"
+    longDescription: "Find your focus with our vibrant Matcha Latte. We use only ceremonial grade matcha sourced directly from Uji, Japan, known for its brilliant green color and smooth, umami-rich flavor profile. Carefully whisked to remove any lumps and poured over perfectly textured steamed milk. A great alternative to coffee that provides a calm, sustained energy release.",
+    image: "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Ceremonial Grade Matcha Powder", "Steamed Milk (Dairy or Plant-based)", "Optional: Dash of Honey or Vanilla"],
+    calories: "120 kcal",
+    allergens: ["Dairy (if cow's milk is chosen)"]
   },
   {
+    id: "caramel-slice",
     name: "Caramel Slice",
     price: "$4.50",
     description: "Rich, buttery, and dangerously addictive. The ultimate reward for finishing that assignment.",
-    image: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&w=800&q=80"
+    longDescription: "Treat yourself to our decadent, house-made Caramel Slice. It starts with a buttery, crumbly shortbread base, topped with a thick, gooey layer of golden caramel, and finished with a smooth, rich dark chocolate ganache. It's the perfect sweet treat to pair with a strong coffee.",
+    image: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Sweetened Condensed Milk", "Butter", "Brown Sugar", "Dark Chocolate (70% Cocoa)", "Wheat Flour", "Desiccated Coconut"],
+    calories: "450 kcal",
+    allergens: ["Dairy", "Gluten"]
   },
   {
+    id: "chicken-mayo-toastie",
     name: "Chicken Mayo Toastie",
     price: "$8.50",
     description: "Crispy, melty, and classic. Made fresh, worth the wait.",
-    image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=800&q=80"
+    longDescription: "Sometimes you just need a classic done right. Our Chicken Mayo Toastie features thick slices of artisan sourdough, generously filled with tender roasted chicken breast mixed with creamy whole-egg mayonnaise, sharp vintage cheddar, and a hint of spring onion. Toasted until golden brown and perfectly melted inside.",
+    image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Artisan Sourdough Bread", "Roasted Chicken Breast", "Whole-egg Mayonnaise", "Vintage Cheddar Cheese", "Spring Onion", "Butter"],
+    calories: "520 kcal",
+    allergens: ["Gluten", "Dairy", "Egg"]
   },
   {
+    id: "chai-latte",
     name: "Chai Latte",
     price: "$5.50",
     description: "A warm hug in a cup. Spiced just right for those chilly morning lectures.",
-    image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80"
+    longDescription: "Warm up with our aromatic, deeply spiced Chai Latte. We brew a robust black tea base with a traditional blend of warming spices including cinnamon, cardamom, ginger, cloves, and star anise. Sweetened lightly with honey and blended with velvety steamed milk for a comforting, fragrant experience.",
+    image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80",
+    ingredients: ["Assam Black Tea", "Cinnamon", "Cardamom", "Fresh Ginger", "Cloves", "Star Anise", "Honey", "Steamed Milk"],
+    calories: "180 kcal",
+    allergens: ["Dairy (if cow's milk is chosen)"]
   }
 ];
 
@@ -96,6 +142,18 @@ const REVIEWS = [
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<MenuItem | null>(null);
+
+  useEffect(() => {
+    if (selectedProduct) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedProduct]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -363,7 +421,10 @@ export default function App() {
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <Card className="h-full border-none shadow-md hover:shadow-xl transition-all duration-300 group overflow-hidden">
+                <Card 
+                  className="h-full border-none shadow-md hover:shadow-xl transition-all duration-300 group overflow-hidden cursor-pointer"
+                  onClick={() => setSelectedProduct(item)}
+                >
                   {item.image && (
                     <div className="aspect-video overflow-hidden">
                       <img 
@@ -641,6 +702,121 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Product Detail Overlay */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <motion.div
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[100] bg-background overflow-y-auto flex flex-col"
+          >
+            {/* Header */}
+            <div className="sticky top-0 bg-background/80 backdrop-blur-md p-4 border-b z-10 flex items-center justify-between">
+              <Button variant="ghost" onClick={() => setSelectedProduct(null)} className="gap-2">
+                <ChevronLeft size={16} /> Back to Menu
+              </Button>
+              <span className="font-serif font-bold text-lg">{selectedProduct.name}</span>
+              <div className="w-24" /> {/* Spacer for centering */}
+            </div>
+
+            {/* Content */}
+            <div className="container mx-auto px-6 py-12 max-w-5xl flex-grow">
+              <div className="grid md:grid-cols-2 gap-12 items-start">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="rounded-[2rem] overflow-hidden shadow-2xl aspect-square sticky top-24"
+                >
+                  <img 
+                    src={selectedProduct.image} 
+                    alt={selectedProduct.name} 
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="space-y-8"
+                >
+                  <div>
+                    {selectedProduct.tag && (
+                      <Badge className="mb-4 bg-secondary text-secondary-foreground hover:bg-secondary">
+                        {selectedProduct.tag}
+                      </Badge>
+                    )}
+                    <h1 className="text-5xl font-serif font-bold mb-4">{selectedProduct.name}</h1>
+                    <p className="text-3xl font-bold text-primary">{selectedProduct.price}</p>
+                  </div>
+
+                  <Separator />
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                      <Info size={20} className="text-primary" /> About this item
+                    </h3>
+                    <p className="text-lg text-muted-foreground leading-relaxed">
+                      {selectedProduct.longDescription}
+                    </p>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-8">
+                    <div>
+                      <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                        <Leaf size={20} className="text-primary" /> Ingredients
+                      </h3>
+                      <ul className="space-y-2">
+                        {selectedProduct.ingredients.map((ingredient, i) => (
+                          <li key={i} className="flex items-start gap-2 text-muted-foreground">
+                            <span className="text-primary mt-1">•</span>
+                            <span>{ingredient}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="space-y-8">
+                      <div>
+                        <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                          <Flame size={20} className="text-primary" /> Nutritional Info
+                        </h3>
+                        <div className="bg-muted p-4 rounded-xl">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="font-medium">Calories</span>
+                            <span className="font-bold text-lg">{selectedProduct.calories}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            * Based on standard serving size. 2000 calories a day is used for general nutrition advice.
+                          </p>
+                        </div>
+                      </div>
+
+                      {selectedProduct.allergens && (
+                        <div>
+                          <h3 className="font-bold mb-2 text-sm uppercase tracking-wider text-muted-foreground">Allergens</h3>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedProduct.allergens.map((allergen, i) => (
+                              <Badge key={i} variant="outline" className="bg-background">
+                                {allergen}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
