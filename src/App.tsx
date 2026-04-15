@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useMotionValue, useSpring, useMotionTemplate } from "motion/react";
 import { 
   Coffee, 
   Clock, 
@@ -144,6 +144,24 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<MenuItem | null>(null);
 
+  // Mouse tracking for background animation
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springX = useSpring(mouseX, { stiffness: 50, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+
+  const background = useMotionTemplate`radial-gradient(600px circle at ${springX}px ${springY}px, rgba(139, 94, 52, 0.08), transparent 80%)`;
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [mouseX, mouseY]);
+
   useEffect(() => {
     if (selectedProduct) {
       document.body.style.overflow = 'hidden';
@@ -170,7 +188,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background selection:bg-primary/10 selection:text-primary">
+    <div className="min-h-screen bg-background selection:bg-primary/10 selection:text-primary relative">
+      {/* Interactive Background */}
+      <motion.div
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{ background }}
+      />
+
       {/* Navigation */}
       <nav 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
